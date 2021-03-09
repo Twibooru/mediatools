@@ -1,18 +1,18 @@
 RM      := rm -f
-CFLAGS  := -O3 -Wall -Isrc -I/usr/include/ffmpeg
+CFLAGS  := -O3 -Wall -Wextra -pedantic -D_FORTIFY_SOURCE=1 -fpic -Isrc
 LIBS    := -lavformat -lavutil -lavcodec -lswscale
 LDFLAGS :=
 INSTALL ?= install
 PREFIX  ?= /usr/local
 
-COMMON_OBJECTS     := build/validation.o build/png.o
-MEDIASTAT_OBJECTS  := build/stat.o
+COMMON_OBJECTS     := build/validation.o build/png.o build/stat.o
+MEDIASTAT_OBJECTS  := build/mediastat.o
 MEDIATHUMB_OBJECTS := build/thumb.o
 
 # Phony rules
 .PHONY: all mediastat clean
 
-all: mediastat mediathumb
+all: mediastat mediathumb lib
 
 install: all
 	$(INSTALL) build/mediastat $(PREFIX)/bin/mediastat
@@ -25,6 +25,11 @@ uninstall:
 mediastat: build/mediastat
 
 mediathumb: build/mediathumb
+
+lib: build/mediatools.so
+
+build/mediatools.so: $(COMMON_OBJECTS)
+	$(CC) -shared $^ $(LDFLAGS) $(LIBS) -o $@
 
 clean:
 	$(RM) $(COMMON_OBJECTS) $(MEDIASTAT_OBJECTS)$(MEDIATHUMB_OBJECTS)

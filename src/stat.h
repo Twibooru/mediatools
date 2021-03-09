@@ -1,0 +1,26 @@
+#ifndef _STAT_H_INCLUDED
+#define _STAT_H_INCLUDED
+
+#include <stdint.h>
+
+enum mediastat_result_code {
+    SUCCESS,
+    FILE_READ_ERROR,
+    FORMAT_VALIDATE_ERROR,
+    DURATION_VALIDATE_ERROR,
+    _RESULT_CODE_LAST
+};
+
+typedef struct mediastat_result {
+    int64_t size;     /* Size of file in bytes */
+    uint64_t frames;  /* Number of frames */
+    uint32_t width;   /* Width of media in pixels */
+    uint32_t height;  /* Height of media in pixels */
+    uint32_t dur_num; /* Duration numerator */
+    uint32_t dur_den; /* Duration denominator */
+} mediastat_result_t;
+
+enum mediastat_result_code mediastat_stat(const char *path, mediastat_result_t *result);
+const char *mediastat_strerror(enum mediastat_result_code code);
+
+#endif
