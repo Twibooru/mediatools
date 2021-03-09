@@ -17,10 +17,12 @@ all: mediastat mediathumb lib
 install: all
 	$(INSTALL) build/mediastat $(PREFIX)/bin/mediastat
 	$(INSTALL) build/mediathumb $(PREFIX)/bin/mediathumb
+	$(INSTALL) build/mediatools.so $(PREFIX)/lib/mediatools.so
 
 uninstall:
-	$(RM) -rf $(PREFIX)/bin/mediastat
-	$(RM) -rf $(PREFIX)/bin/mediathumb
+	$(RM) $(PREFIX)/bin/mediastat
+	$(RM) $(PREFIX)/bin/mediathumb
+	$(RM) $(PREFIX)/lib/mediatools.so
 
 mediastat: build/mediastat
 
