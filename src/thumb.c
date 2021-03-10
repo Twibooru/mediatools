@@ -28,6 +28,7 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
     }
 
     int vstream_idx = av_find_best_stream(format, AVMEDIA_TYPE_VIDEO, -1, -1, &vcodec, 0);
+
     if (vstream_idx < 0) {
         return FIND_BEST_STREAM_ERROR;
     }
@@ -80,7 +81,6 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
 
             // If this is the first frame past the requested time or the
             // current frame contains the requested time, pick this frame.
-
             if (av_cmp_q(cur_time, time) >= 0 || (av_cmp_q(cur_time, time) <= 0 && av_cmp_q(next_time, time) >= 0)) {
                 found = 1;
 
