@@ -3,13 +3,7 @@
 
 #include <stdint.h>
 
-enum mediastat_result_code {
-    SUCCESS,
-    FILE_READ_ERROR,
-    FORMAT_VALIDATE_ERROR,
-    DURATION_VALIDATE_ERROR,
-    _RESULT_CODE_LAST
-};
+#include "common.h"
 
 typedef struct mediastat_result {
     int64_t size;     /* Size of file in bytes */
@@ -20,7 +14,6 @@ typedef struct mediastat_result {
     uint32_t dur_den; /* Duration denominator */
 } mediastat_result_t;
 
-enum mediastat_result_code mediastat_stat(const char *path, mediastat_result_t *result);
-const char *mediastat_strerror(enum mediastat_result_code code);
+enum mediatools_result_code mediastat_stat(const char *path, mediastat_result_t *result);
 
 #endif

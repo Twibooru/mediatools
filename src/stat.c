@@ -7,13 +7,6 @@
 #include "stat.h"
 #include "validation.h"
 
-static const char *mediastat_error_strings[_RESULT_CODE_LAST] = {
-    "Success",
-    "File read error",
-    "Format validation error",
-    "Duration validation error"
-};
-
 static int64_t start_time(AVStream *stream)
 {
     if (stream->start_time == AV_NOPTS_VALUE) {
@@ -23,11 +16,7 @@ static int64_t start_time(AVStream *stream)
     return stream->start_time;
 }
 
-const char *mediastat_strerror(enum mediastat_result_code code) {
-    return mediastat_error_strings[code];
-}
-
-enum mediastat_result_code mediastat_stat(const char *path, mediastat_result_t *result) {
+enum mediatools_result_code mediastat_stat(const char *path, mediastat_result_t *result) {
     struct stat statbuf;
     AVFormatContext *format = NULL;
     AVPacket pkt;

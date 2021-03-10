@@ -1,10 +1,11 @@
 #include <stdio.h>
 
 #include "stat.h"
+#include "common.h"
 
 int main(int argc, char *argv[]) {
     mediastat_result_t result;
-    enum mediastat_result_code resultCode;
+    enum mediatools_result_code resultCode;
 
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <file path>\n", argv[0]);
@@ -12,7 +13,7 @@ int main(int argc, char *argv[]) {
     }
 
     if ((resultCode = mediastat_stat(argv[1], &result)) != SUCCESS) {
-        fprintf(stderr, "Error: mediastat_stat(): %s\n", mediastat_strerror(resultCode));
+        fprintf(stderr, "Error: mediastat_stat(): %s\n", mediatools_strerror(resultCode));
         return 1;
     }
 

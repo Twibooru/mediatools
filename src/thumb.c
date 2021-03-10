@@ -1,9 +1,11 @@
 #include <libavformat/avformat.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "png.h"
+#include "thumb.h"
+#include "common.h"
 
-int main(int argc, char *argv[])
-{
+enum mediatools_result_code mediathumb_generate_thumb(const char *input, double timeIn, const char *output) {
     AVFormatContext *format = NULL;
     AVCodecContext *vctx = NULL;
     AVStream *vstream = NULL;
@@ -13,31 +15,21 @@ int main(int argc, char *argv[])
 
     int found = 0;
 
-    if (argc != 4) {
-        printf("Expected an input, a time, and an output\n");
-        return -1;
-    }
-
     av_log_set_level(AV_LOG_QUIET);
 
-    const char *input = argv[1];
-    const char *output = argv[3];
-    AVRational time = av_d2q(atof(argv[2]), INT_MAX);
+    AVRational time = av_d2q(timeIn, INT_MAX);
 
     if (avformat_open_input(&format, input, NULL, NULL) != 0) {
-        printf("Couldn't read file\n");
-        return -1;
+        return FILE_READ_ERROR;
     }
 
     if (avformat_find_stream_info(format, NULL) < 0) {
-        printf("Couldn't read file \n");
-        return -1;
+        return FILE_READ_ERROR;
     }
 
     int vstream_idx = av_find_best_stream(format, AVMEDIA_TYPE_VIDEO, -1, -1, &vcodec, 0);
     if (vstream_idx < 0) {
-        printf("Couldn't read file\n");
-        return -1;
+        return FILE_READ_ERROR;
     }
 
     vstream = format->streams[vstream_idx];
@@ -45,24 +37,20 @@ int main(int argc, char *argv[])
     // Set up decoding context
     vctx = avcodec_alloc_context3(vcodec);
     if (!vctx) {
-        printf("Couldn't read file\n");
-        return -1;
+        return FILE_READ_ERROR;
     }
 
     if (avcodec_parameters_to_context(vctx, vstream->codecpar) < 0) {
-        printf("Couldn't read file\n");
-        return -1;
+        return FILE_READ_ERROR;
     }
 
     if (avcodec_open2(vctx, vcodec, NULL) < 0) {
-        printf("Couldn't read file\n");
-        return -1;
+        return FILE_READ_ERROR;
     }
 
     frame = av_frame_alloc();
     if (!frame) {
-        printf("Couldn't read file\n");
-        return -1;
+        return FILE_READ_ERROR;
     }
 
     // Loop until we get to the first video frame past the intended pts,
@@ -75,8 +63,7 @@ int main(int argc, char *argv[])
 
             if (avcodec_send_packet(vctx, &pkt) != 0) {
                 // Decoder returned an error
-                printf("Couldn't read file\n");
-                return -1;
+                return FILE_READ_ERROR;
             }
 
             int ret = avcodec_receive_frame(vctx, frame);
@@ -88,8 +75,7 @@ int main(int argc, char *argv[])
 
             if (ret != 0) {
                 // Decoder returned an error
-                printf("Couldn't read file\n");
-                return -1;
+                return FILE_READ_ERROR;
             }
 
             // If this is the first frame past the requested time or the
@@ -100,8 +86,7 @@ int main(int argc, char *argv[])
 
                 // Found the frame; write to the provided file
                 if (mediatools_write_frame_to_png(frame, output) < 0) {
-                    printf("Couldn't read file\n");
-                    return -1;
+                    return FILE_READ_ERROR;
                 }
             }
         }
@@ -110,13 +95,12 @@ int main(int argc, char *argv[])
     }
 
     if (!found) {
-        printf("Couldn't read file\n");
-        return -1;
+        return FILE_READ_ERROR;
     }
 
     av_frame_free(&frame);
     avcodec_free_context(&vctx);
     avformat_close_input(&format);
 
-    return 0;
+    return SUCCESS;
 }

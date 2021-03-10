@@ -5,9 +5,9 @@ LDFLAGS :=
 INSTALL ?= install
 PREFIX  ?= /usr/local
 
-COMMON_OBJECTS     := build/validation.o build/png.o build/stat.o
+COMMON_OBJECTS     := build/common.o build/validation.o build/png.o build/stat.o build/thumb.o
 MEDIASTAT_OBJECTS  := build/mediastat.o
-MEDIATHUMB_OBJECTS := build/thumb.o
+MEDIATHUMB_OBJECTS := build/mediathumb.o
 
 # Phony rules
 .PHONY: all mediastat clean
