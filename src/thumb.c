@@ -24,12 +24,12 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
     }
 
     if (avformat_find_stream_info(format, NULL) < 0) {
-        return FILE_READ_ERROR;
+        return FIND_STREAM_INFO_ERROR;
     }
 
     int vstream_idx = av_find_best_stream(format, AVMEDIA_TYPE_VIDEO, -1, -1, &vcodec, 0);
     if (vstream_idx < 0) {
-        return FILE_READ_ERROR;
+        return FIND_BEST_STREAM_ERROR;
     }
 
     vstream = format->streams[vstream_idx];
@@ -37,20 +37,20 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
     // Set up decoding context
     vctx = avcodec_alloc_context3(vcodec);
     if (!vctx) {
-        return FILE_READ_ERROR;
+        return DECODING_CONTEXT_ERROR;
     }
 
     if (avcodec_parameters_to_context(vctx, vstream->codecpar) < 0) {
-        return FILE_READ_ERROR;
+        return DECODING_CONTEXT_ERROR;
     }
 
     if (avcodec_open2(vctx, vcodec, NULL) < 0) {
-        return FILE_READ_ERROR;
+        return DECODING_CONTEXT_ERROR;
     }
 
     frame = av_frame_alloc();
     if (!frame) {
-        return FILE_READ_ERROR;
+        return DECODING_CONTEXT_ERROR;
     }
 
     // Loop until we get to the first video frame past the intended pts,
@@ -63,7 +63,7 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
 
             if (avcodec_send_packet(vctx, &pkt) != 0) {
                 // Decoder returned an error
-                return FILE_READ_ERROR;
+                return DECODE_ERROR;
             }
 
             int ret = avcodec_receive_frame(vctx, frame);
@@ -75,7 +75,7 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
 
             if (ret != 0) {
                 // Decoder returned an error
-                return FILE_READ_ERROR;
+                return DECODE_ERROR;
             }
 
             // If this is the first frame past the requested time or the
@@ -86,7 +86,7 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
 
                 // Found the frame; write to the provided file
                 if (mediatools_write_frame_to_png(frame, output) < 0) {
-                    return FILE_READ_ERROR;
+                    return IMAGE_WRITE_ERROR;
                 }
             }
         }
@@ -95,7 +95,7 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
     }
 
     if (!found) {
-        return FILE_READ_ERROR;
+        return FRAME_NOT_FOUND_ERROR;
     }
 
     av_frame_free(&frame);
