@@ -3,18 +3,47 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #include "stat.h"
 #include "validation.h"
 
-static int64_t start_time(AVStream *stream)
-{
+static int64_t start_time(AVStream *stream) {
     if (stream->start_time == AV_NOPTS_VALUE) {
         return 0;
     }
 
     return stream->start_time;
 }
+
+#ifdef MEDIASTAT_MAGIC
+static bool mediastat_magic(const char *path, mediastat_result_t *result) {
+    magic_t magic = magic_open(MAGIC_SYMLINK | MAGIC_MIME_TYPE | MAGIC_ERROR);
+
+    if (magic == NULL) {
+        fprintf(stderr, "magic_open(): unknown error\n");
+        return false;
+    }
+
+    if (magic_load(magic, NULL) != 0) {
+        fprintf(stderr, "magic_load(): %s\n", magic_error(magic));
+    }
+
+    const char *mime = magic_file(magic, path);
+
+    if (mime == NULL) {
+        fprintf(stderr, "magic_file(): %s\n", magic_error(magic));
+        magic_close(magic);
+        return false;
+    }
+
+    strncpy(result->mime, mime, 32);
+
+    magic_close(magic);
+
+    return true;
+}
+#endif
 
 enum mediatools_result_code mediastat_stat(const char *path, mediastat_result_t *result) {
     struct stat statbuf;
@@ -25,6 +54,10 @@ enum mediatools_result_code mediastat_stat(const char *path, mediastat_result_t 
 
     if (stat(path, &statbuf) != 0) {
         return FILE_READ_ERROR;
+    }
+
+    if (!mediastat_magic(path, result)) {
+        return MIME_TYPE_ERROR;
     }
 
     if (avformat_open_input(&format, path, NULL, NULL) != 0) {

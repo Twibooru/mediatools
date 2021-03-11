@@ -10,7 +10,10 @@ static const char *mediastat_error_strings[_RESULT_CODE_LAST] = {
     "Error writing image file",
     "No frame found for requested time",
     "Format validation error",
-    "Duration validation error"
+    "Duration validation error",
+    #ifdef MEDIASTAT_MAGIC
+    "Error determining file MIME type"
+    #endif
 };
 
 static const char *unknown_error_string = "Unknown error (likely illegal error code)";

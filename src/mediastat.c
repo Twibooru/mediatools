@@ -17,7 +17,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    printf("%ld %lu %d %d %d %d\n", result.size, result.frames, result.width, result.height, result.dur_num, result.dur_den);
+    #ifdef MEDIASTAT_MAGIC
+        printf("%ld %lu %d %d %d %d %s\n", result.size, result.frames, result.width, result.height, result.dur_num, result.dur_den, result.mime);
+    #else
+        printf("%ld %lu %d %d %d %d\n", result.size, result.frames, result.width, result.height, result.dur_num, result.dur_den);
+    #endif
+
 
     return 0;
 }

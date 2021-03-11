@@ -12,6 +12,9 @@ enum mediatools_result_code {
     FRAME_NOT_FOUND_ERROR,
     FORMAT_VALIDATE_ERROR,
     DURATION_VALIDATE_ERROR,
+    #ifdef MEDIASTAT_MAGIC
+    MIME_TYPE_ERROR,
+    #endif
     _RESULT_CODE_LAST
 };
 

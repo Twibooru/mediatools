@@ -1,6 +1,6 @@
 RM      := rm -f
-CFLAGS  := -O3 -Wall -Wextra -pedantic -D_FORTIFY_SOURCE=1 -DMEDIATOOLS_ALLOW_MP4 -fpic -Isrc
-LIBS    := -lavformat -lavutil -lavcodec -lswscale
+CFLAGS  := -O3 -Wall -Wextra -pedantic -D_FORTIFY_SOURCE=1 -DMEDIATOOLS_ALLOW_MP4 -DMEDIASTAT_MAGIC -fpic -Isrc
+LIBS    := -lavformat -lavutil -lavcodec -lswscale -lmagic
 LDFLAGS :=
 INSTALL ?= install
 PREFIX  ?= /usr/local

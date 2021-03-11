@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 
+#ifdef MEDIASTAT_MAGIC
+    #include <magic.h>
+    #include <stdbool.h>
+#endif
+
 #include "common.h"
 
 typedef struct mediastat_result {
@@ -12,6 +17,9 @@ typedef struct mediastat_result {
     uint32_t height;  /* Height of media in pixels */
     uint32_t dur_num; /* Duration numerator */
     uint32_t dur_den; /* Duration denominator */
+    #ifdef MEDIASTAT_MAGIC
+        char mime[33]; /* Chosen by fair dice roll */
+    #endif
 } mediastat_result_t;
 
 enum mediatools_result_code mediastat_stat(const char *path, mediastat_result_t *result);
