@@ -1,4 +1,5 @@
 #include <libavformat/avformat.h>
+#include <stdio.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -7,6 +8,7 @@
 
 #include "stat.h"
 #include "validation.h"
+#include "util.h"
 
 static int64_t start_time(AVStream *stream) {
     if (stream->start_time == AV_NOPTS_VALUE) {
@@ -60,9 +62,10 @@ enum mediatools_result_code mediastat_stat(const char *path, mediastat_result_t 
         return MIME_TYPE_ERROR;
     }
 
-    if (avformat_open_input(&format, path, NULL, NULL) != 0) {
-        return FILE_READ_ERROR;
+    if (open_input_correct_demuxer(&format, path) != 0) {
+    	return FILE_READ_ERROR;
     }
+
 
     if (avformat_find_stream_info(format, NULL) < 0) {
         return FILE_READ_ERROR;

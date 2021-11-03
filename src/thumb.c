@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "png.h"
+#include "util.h"
 #include "thumb.h"
 #include "common.h"
 
@@ -19,8 +20,9 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
 
     AVRational time = av_d2q(timeIn, INT_MAX);
 
-    if (avformat_open_input(&format, input, NULL, NULL) != 0) {
-        return FILE_READ_ERROR;
+    if (open_input_correct_demuxer(&format, input) != 0) {
+        printf("Couldn't read file\n");
+        return -1;
     }
 
     if (avformat_find_stream_info(format, NULL) < 0) {
@@ -81,6 +83,7 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
 
             // If this is the first frame past the requested time or the
             // current frame contains the requested time, pick this frame.
+
             if (av_cmp_q(cur_time, time) >= 0 || (av_cmp_q(cur_time, time) <= 0 && av_cmp_q(next_time, time) >= 0)) {
                 found = 1;
 
