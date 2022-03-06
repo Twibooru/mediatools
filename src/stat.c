@@ -58,14 +58,15 @@ enum mediatools_result_code mediastat_stat(const char *path, mediastat_result_t 
         return FILE_READ_ERROR;
     }
 
+#ifdef MEDIASTAT_MAGIC
     if (!mediastat_magic(path, result)) {
         return MIME_TYPE_ERROR;
     }
+#endif
 
     if (open_input_correct_demuxer(&format, path) != 0) {
     	return FILE_READ_ERROR;
     }
-
 
     if (avformat_find_stream_info(format, NULL) < 0) {
         return FILE_READ_ERROR;
