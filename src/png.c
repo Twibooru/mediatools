@@ -25,11 +25,11 @@ int mediatools_write_frame_to_png(AVFrame *in_frame, const char *path)
 {
     struct SwsContext *sws_ctx = NULL;
     AVFormatContext *format = NULL;
-    AVOutputFormat *png = NULL;
+    const AVOutputFormat *png = NULL;
     AVCodecContext *vctx = NULL;
     AVStream *vstream = NULL;
     AVFrame *out_frame = NULL;
-    AVCodec *vcodec = NULL;
+    const AVCodec *vcodec = NULL;
     AVPacket *pkt = NULL;
 
     int ret = -1;

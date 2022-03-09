@@ -10,7 +10,7 @@ enum mediatools_result_code mediathumb_generate_thumb(const char *input, double 
     AVFormatContext *format = NULL;
     AVCodecContext *vctx = NULL;
     AVStream *vstream = NULL;
-    AVCodec *vcodec = NULL;
+    const AVCodec *vcodec = NULL;
     AVFrame *frame = NULL;
     AVPacket pkt;
 

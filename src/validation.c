@@ -120,12 +120,13 @@ int mediatools_validate_video(AVFormatContext *format)
         return false;
     }
 
-    AVInputFormat *iformat = format->iformat;
-    AVCodecParameters *vpar = format->streams[vstream_idx]->codecpar;
-    AVCodecParameters *apar = NULL;
+    const AVInputFormat *iformat = format->iformat;
+    const AVCodecParameters *vpar = format->streams[vstream_idx]->codecpar;
+    const AVCodecParameters *apar = NULL;
 
-    if (astream_idx != -1)
+    if (astream_idx != -1) {
         apar = format->streams[astream_idx]->codecpar;
+    }
 
     #ifdef MEDIATOOLS_ALLOW_MP4
 
