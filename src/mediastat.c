@@ -1,11 +1,17 @@
 #include <stdio.h>
 
+#include "util.h"
 #include "stat.h"
 #include "common.h"
 
 int main(int argc, char *argv[]) {
     mediastat_result_t result;
     enum mediatools_result_code resultCode;
+
+    if (argc == 2 && !strcmp(argv[1], "-v")) {
+        fprintf(stderr, mediatools_version());
+        return 0;
+    }
 
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <file path>\n", argv[0]);

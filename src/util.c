@@ -1,5 +1,35 @@
 #include <libavcodec/avcodec.h>
+#include <libavutil/version.h>
 #include "util.h"
+
+#ifdef MEDIASTAT_MAGIC
+    #include <magic.h>
+#endif
+
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
+/* I hate this :3 */
+static const char *g_mediatools_version =
+    "MP4: "
+        #ifdef MEDIATOOLS_ALLOW_MP4
+            "yes"
+        #else
+            "no"
+        #endif
+    ", Magic: "
+        #ifdef MEDIASTAT_MAGIC
+            "version " STR(MAGIC_VERSION)
+        #else
+            "no"
+        #endif
+    ", libav version: "
+        LIBAVCODEC_IDENT
+    ;
+
+const char *mediatools_version() {
+    return g_mediatools_version;
+}
 
 static int valid_demuxer(AVInputFormat *fmt)
 {
@@ -41,3 +71,4 @@ int open_input_correct_demuxer(AVFormatContext **ctx, const char *filename)
     avformat_close_input(ctx);
     return avformat_open_input(ctx, filename, image2_demuxer(), NULL);
 }
+
