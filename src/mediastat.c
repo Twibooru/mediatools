@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
     enum mediatools_result_code resultCode;
 
     if (argc == 2 && !strcmp(argv[1], "-v")) {
-        fprintf(stderr, mediatools_version());
+        fprintf(stderr, "%s\n", mediatools_version());
         return 0;
     }
 
